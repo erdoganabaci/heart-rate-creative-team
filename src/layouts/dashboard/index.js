@@ -1,8 +1,4 @@
-import {
-  // useEffect,
-  useState,
-  useCallback,
-} from "react";
+import { useEffect, useState, useCallback } from "react";
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -15,6 +11,9 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
+import HistoryBarChart from "examples/Charts/ReCharts/HistoryBarChart";
+import HistoryLineChart from "examples/Charts/ReCharts/HistoryLineChart";
+
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import BatteryCard from "examples/Cards/StatisticsCards/BatteryCard";
 import HeartCard from "examples/Cards/StatisticsCards/HeartCard";
@@ -61,39 +60,53 @@ function Dashboard() {
   };
 
   const [miband, setmiband] = useState();
+  console.log("miband", miband);
   // let miband;
   // function delay(ms) {
   //     return new Promise(resolve => setTimeout(resolve, ms))
   //   }
+  async function onHeartRate(rate) {
+    console.log("hey I am changing after mi band", maxRate);
 
+    console.log("Heart Rate:", rate);
+    setHeartRate(rate);
+    // if (rate >= 80) {
+    //   console.log("you exceed heart rate limit", rate);
+    //   //   await miband.showNotification('vibrate');
+    // }
+
+    if (rate > maxRate) {
+      console.log("you exceed max heart rate limit", rate);
+      console.log("maxRate bound compare", maxRate);
+      await miband.showNotification("vibrate");
+      setTimeout(async () => {
+        await miband.showNotification("vibrate");
+      }, 1000);
+    } else if (rate < minRate) {
+      console.log("minRate bound compare", minRate);
+
+      console.log("Be carefull you exceed min heart rate limit", rate);
+      await miband.showNotification("vibrate");
+    }
+  }
+
+  useEffect(() => {
+    startHeartRate();
+  }, [maxRate, minRate]);
   const startHeartRate = useCallback(async () => {
-    miband.on("heart_rate", async (rate) => {
-      console.log("Heart Rate:", rate);
-      setHeartRate(rate);
-      // if (rate >= 80) {
-      //   console.log("you exceed heart rate limit", rate);
-      //   //   await miband.showNotification('vibrate');
-      // }
-
-      if (rate > maxRate) {
-        console.log("you exceed max heart rate limit", rate);
-        console.log("maxRate bound compare", maxRate);
-        await miband.showNotification("vibrate");
-        setTimeout(async () => {
-          await miband.showNotification("vibrate");
-        }, 1000);
-      } else if (rate < minRate) {
-        console.log("minRate bound compare", minRate);
-
-        console.log("Be carefull you exceed min heart rate limit", rate);
-        await miband.showNotification("vibrate");
-      }
-    });
+    if (!miband) {
+      return;
+    }
+    console.log("hey I am changing", maxRate);
+    miband.removeAllListeners("heart_rate");
+    console.log(miband.listeners("heart_rate"));
+    miband.on("heart_rate", onHeartRate.bind(this));
     await miband.hrmStart().then(async () => {
       console.log("hrmStart");
       setHrmStatus("hrmStart");
     });
-  }, [maxRate, minRate]);
+  }, [maxRate, minRate, miband]);
+
   const stopHeartRate = async () => {
     await miband.hrmStop().then(async () => {
       console.log("miHrmStop");
@@ -250,15 +263,28 @@ function Dashboard() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={6}>
               <MDBox mb={3}>
-                <ReportsBarChart
+                <HistoryBarChart
                   color="info"
-                  title="website views"
-                  description="Last Campaign Performance"
-                  date="campaign sent 2 days ago"
-                  chart={reportsBarChartData}
+                  title="History of last 10 workouts "
+                  description="Last 10 Performance"
+                  date="last update 2 days ago"
+                  // chart={reportsBarChartData}
                 />
               </MDBox>
             </Grid>
+
+            <Grid item xs={12} md={6} lg={6}>
+              <MDBox mb={3}>
+                <HistoryLineChart
+                  color="info"
+                  title="Showing fluctuation in heart rate throught the whole workout. "
+                  description="Last 10 Performance"
+                  date="last update 2 days ago"
+                  // chart={reportsBarChartData}
+                />
+              </MDBox>
+            </Grid>
+
             {/* <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
                 <ReportsLineChart
@@ -274,17 +300,17 @@ function Dashboard() {
                 />
               </MDBox>
             </Grid> */}
-            <Grid item xs={12} md={6} lg={6}>
+            {/* <Grid item xs={12} md={6} lg={6}>
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="dark"
-                  title="completed tasks"
-                  description="Last Campaign Performance"
-                  date="just updated"
+                  title="Showing fluctuation in heart rate throught the whole workout. "
+                  // description="Last Campaign Performance"
+                  date="1 day ago updated"
                   chart={tasks}
                 />
               </MDBox>
-            </Grid>
+            </Grid> */}
           </Grid>
         </MDBox>
 
