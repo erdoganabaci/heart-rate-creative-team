@@ -28,7 +28,6 @@ import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 
 // Material Dashboard 2 React base styles
@@ -36,7 +35,7 @@ import breakpoints from "assets/theme/base/breakpoints";
 
 // Images
 import burceMars from "assets/images/bruce-mars.jpg";
-import backgroundImage from "assets/images/bg-profile.jpeg";
+import backgroundImage from "assets/images/heart-pulse.jpeg";
 
 function Header({ children }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
@@ -83,6 +82,7 @@ function Header({ children }) {
           overflow: "hidden",
         }}
       />
+
       <Card
         sx={{
           position: "relative",
@@ -92,7 +92,7 @@ function Header({ children }) {
           px: 2,
         }}
       >
-        <Grid container spacing={3} alignItems="center">
+        {/* <Grid container spacing={3} alignItems="center">
           <Grid item>
             <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
           </Grid>
@@ -136,7 +136,7 @@ function Header({ children }) {
               </Tabs>
             </AppBar>
           </Grid>
-        </Grid>
+        </Grid> */}
         {children}
       </Card>
     </MDBox>

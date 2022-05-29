@@ -22,8 +22,22 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+// import { makeStyles } from " @mui/material/styles";
 
-function Projects({ handleMaxMinChange, handleMaxChange, handleMinChange }) {
+function Projects({
+  handleMaxMinChange,
+  handleMaxChange,
+  handleMinChange,
+  handleWorkoutNameChange,
+}) {
+  // const useStyles = makeStyles((theme) => ({
+  //   formControl: {
+  //     margin: theme.spacing(1),
+  //     minWidth: 120,
+  //   },
+  // }));
+
+  // const { formControl } = useStyles();
   const { columns, rows } = data();
   const [menu, setMenu] = useState(null);
   const [heartRate, setHeartRate] = useState("");
@@ -34,6 +48,8 @@ function Projects({ handleMaxMinChange, handleMaxChange, handleMinChange }) {
     console.log("event.target.value", event.target.value);
     const startHeartTime = event.target.value.split("-")[0];
     const stopHeartTime = event.target.value.split("-")[1];
+    const workoutName = event.target.value.split("-")[2];
+
     setStartTime(startHeartTime);
     setStopTime(stopHeartTime);
     handleMaxMinChange(startHeartTime, stopHeartTime);
@@ -42,6 +58,7 @@ function Projects({ handleMaxMinChange, handleMaxChange, handleMinChange }) {
     console.log("stopHeartTime", stopHeartTime);
     handleMinChange(startHeartTime);
     handleMaxChange(stopHeartTime);
+    handleWorkoutNameChange(workoutName);
     setHeartRate(event.target.value);
   };
 
@@ -105,18 +122,21 @@ function Projects({ handleMaxMinChange, handleMaxChange, handleMinChange }) {
       <MDBox>
         <Grid container spacing={3}>
           <Grid item xs={4} md={4} lg={4}>
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl>
-                <InputLabel id="demo-simple-select-label">Heart Rate</InputLabel>
+            <Box sx={{ minWidth: 120 }} mb={2}>
+              <FormControl size={"medium"}>
+                <InputLabel id="demo-simple-select-label">Workout Types</InputLabel>
                 <Select
+                  sx={{ width: "150px", height: "50px" }}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={heartRate}
-                  label="Heart Rate"
+                  label="Workout Types"
                   onChange={handleChange}
+                  // className={formControl}
                 >
-                  <MenuItem value={"80-90"}>Squat</MenuItem>
-                  <MenuItem value={"90-100"}>Push Up</MenuItem>
+                  <MenuItem value={"70-100-Walking"}>Walking</MenuItem>
+                  <MenuItem value={"80-90-Squat"}>Squat</MenuItem>
+                  <MenuItem value={"90-100-PushUp"}>Push Up</MenuItem>
                   {/* <MenuItem value={30}>30</MenuItem> */}
                 </Select>
               </FormControl>

@@ -19,33 +19,328 @@ import BatteryCard from "examples/Cards/StatisticsCards/BatteryCard";
 import HeartCard from "examples/Cards/StatisticsCards/HeartCard";
 import CountDownCard from "examples/Cards/StatisticsCards/CountDownCard";
 
-// Data
-import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
-import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
-
 // Dashboard components
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import HeartMonitor from "./heartMonitor";
 import MiBand from "./miband";
 
+import useSound from "use-sound";
+import speedUp from "sounds/time_to_speedup.mp3";
+import finishedExercises from "sounds/finished_exercises.mp3";
+import keepGoing from "sounds/keep_going.mp3";
+import maxLimitExceed from "sounds/max_limit_exceed.mp3";
+import minLimitExceed from "sounds/max_limit_exceed.mp3";
+import startExercises from "sounds/start_exercises.mp3";
+import slowDown from "sounds/time_to_slow_down.mp3";
+
 function Dashboard() {
-  const { sales, tasks } = reportsLineChartData;
   const bluetooth = navigator.bluetooth;
-  const [state, setState] = useState("");
+  const [timer, setTimer] = useState(null);
+  const [state, setState] = useState("Disconnected");
   const [battery, setBattery] = useState("");
   const [heartRate, setHeartRate] = useState("");
   const [hrmStatus, setHrmStatus] = useState("");
 
   const [maxMinRate, setMaxMinRate] = useState({ min: 90, max: 110 });
+  const [workoutName, setWorkoutName] = useState("");
   const [minRate, setMinRate] = useState(90);
   const [maxRate, setMaxRate] = useState(110);
+  const [miband, setmiband] = useState();
 
+  const [playSpeedUp] = useSound(speedUp, { interrupt: true });
+  const [playFinishedExercises] = useSound(finishedExercises, { interrupt: true });
+  const [playKeepGoing] = useSound(keepGoing, { interrupt: true });
+  const [playMaxLimitExceed] = useSound(maxLimitExceed, { interrupt: true });
+  const [playMinLimitExceed] = useSound(minLimitExceed, { interrupt: true });
+  const [playSlowDown] = useSound(slowDown, { interrupt: true });
+  const [playStartExercises] = useSound(startExercises, { interrupt: true });
+
+  const [minRateExceedCount, setMinRateExceedCount] = useState(0);
+  const [maxRateExceedCount, setMaxRateExceedCount] = useState(0);
+
+  console.log("here timer start", timer);
   console.log("minRate parent", minRate);
   console.log("maxRate parent", maxRate);
 
   console.log("max Rate", maxMinRate.max);
   console.log("min rate", maxMinRate.min);
+
+  console.log("workoutName", workoutName);
+
+  const [stateHearRateWithTimer, setStateHeartRateWithTimer] = useState([
+    {
+      heartRate: 0,
+      second: 58,
+    },
+  ]);
+
+  const [numberOfExceedHeartRateData, setNumberOfExceedHeartRate] = useState([
+    {
+      exceedLowerCount: 0,
+      exceedMaxCount: 0,
+      totalExceed: 0,
+      second: 58,
+    },
+  ]);
+
+  console.log("stateHearRateWithTimer", stateHearRateWithTimer);
+  console.log("numberOfExceedHeartRate", numberOfExceedHeartRateData);
+
+  useEffect(() => {
+    console.log("workoutName", workoutName);
+    console.log("case timer", timer);
+    if (workoutName === "PushUp") {
+      console.log("entered push up", timer);
+
+      switch (timer) {
+        case 58:
+          playStartExercises();
+          break;
+        case 40:
+          playSpeedUp();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+
+          break;
+        case 20:
+          playKeepGoing();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+
+          break;
+        case 10:
+          playSlowDown();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          break;
+        case 0:
+          playFinishedExercises();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          break;
+      }
+      // put here switch case
+    } else if (workoutName === "Squat") {
+      switch (timer) {
+        case 58:
+          playStartExercises();
+          break;
+        case 45:
+          playSpeedUp();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+
+          break;
+        case 35:
+          playKeepGoing();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+
+          break;
+        case 25:
+          playSlowDown();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          break;
+        case 15:
+          playSlowDown();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          break;
+        case 0:
+          playFinishedExercises();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          break;
+      }
+    } else {
+      switch (timer) {
+        case 58:
+          playStartExercises();
+          // setStateHeartRateWithTimer((prev) => [
+          //   ...prev,
+          //   { heartRate: Number(heartRate), second: timer },
+          // ]);
+
+          // setState([{ heartRate: 80, time: 45 }]);
+
+          break;
+        case 45:
+          playSpeedUp();
+          console.log("last 45 second speed up");
+          console.log("heartRate", heartRate);
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          // setState([{ heartRate: 80, time: 45 }]);
+
+          break;
+        case 30:
+          playKeepGoing();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          // setState([{ heartRate: 80, time: 30 }]);
+
+          break;
+        case 15:
+          playSlowDown();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          // setState([{ heartRate: 89, time: 15 }]);
+          break;
+        case 0:
+          console.log("Time's up!");
+          playFinishedExercises();
+          setStateHeartRateWithTimer((prev) => [
+            ...prev,
+            { heartRate: Number(heartRate), second: timer },
+          ]);
+          setNumberOfExceedHeartRate((prev) => [
+            ...prev,
+            {
+              exceedLowerCount: minRateExceedCount,
+              exceedMaxCount: maxRateExceedCount,
+              totalExceed: minRateExceedCount + maxRateExceedCount,
+              second: timer,
+            },
+          ]);
+          // setState([{ heartRate: 100, time: 0 }]);
+          break;
+      }
+    }
+  }, [timer, heartRate, workoutName]);
 
   const handleMaxChange = (max) => {
     setMaxRate(max);
@@ -59,22 +354,18 @@ function Dashboard() {
     setMaxMinRate({ min, max });
   };
 
-  const [miband, setmiband] = useState();
+  const handleWorkoutNameChange = (workoutName) => {
+    setWorkoutName(workoutName);
+  };
+
   console.log("miband", miband);
   // let miband;
   // function delay(ms) {
   //     return new Promise(resolve => setTimeout(resolve, ms))
   //   }
   async function onHeartRate(rate) {
-    console.log("hey I am changing after mi band", maxRate);
-
     console.log("Heart Rate:", rate);
     setHeartRate(rate);
-    // if (rate >= 80) {
-    //   console.log("you exceed heart rate limit", rate);
-    //   //   await miband.showNotification('vibrate');
-    // }
-
     if (rate > maxRate) {
       console.log("you exceed max heart rate limit", rate);
       console.log("maxRate bound compare", maxRate);
@@ -82,11 +373,13 @@ function Dashboard() {
       setTimeout(async () => {
         await miband.showNotification("vibrate");
       }, 1000);
+      setMaxRateExceedCount((prevMaxRateExceedCount) => prevMaxRateExceedCount + 1);
     } else if (rate < minRate) {
       console.log("minRate bound compare", minRate);
 
       console.log("Be carefull you exceed min heart rate limit", rate);
       await miband.showNotification("vibrate");
+      setMinRateExceedCount((prevMinRateExceedCount) => prevMinRateExceedCount + 1);
     }
   }
 
@@ -97,7 +390,6 @@ function Dashboard() {
     if (!miband) {
       return;
     }
-    console.log("hey I am changing", maxRate);
     miband.removeAllListeners("heart_rate");
     console.log(miband.listeners("heart_rate"));
     miband.on("heart_rate", onHeartRate.bind(this));
@@ -190,7 +482,7 @@ function Dashboard() {
                 count={battery}
                 percentage={{
                   color: `${state === "Device Connected" ? "success" : "error"}`,
-                  amount: `${state === "Device Connected" ? "Connected" : "Disconnected"} `,
+                  amount: `${state === "Device Connected" ? "Connected" : state} `,
                   // label: "than lask week",
                 }}
               />
@@ -216,6 +508,7 @@ function Dashboard() {
           <Grid item xs={12} md={12} lg={12}>
             <MDBox mb={1.5}>
               <CountDownCard
+                setTimer={setTimer}
                 color="success"
                 icon="hourglass_bottom"
                 title="Countdown"
@@ -251,6 +544,7 @@ function Dashboard() {
                 handleMaxMinChange={handleMaxMinChange}
                 handleMaxChange={handleMaxChange}
                 handleMinChange={handleMinChange}
+                handleWorkoutNameChange={handleWorkoutNameChange}
               />
             </Grid>
             {/* <Grid item xs={12} md={12} lg={12}>
@@ -261,24 +555,25 @@ function Dashboard() {
 
         <MDBox mt={5}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={6}>
+            <Grid item xs={12} md={12} lg={12}>
               <MDBox mb={3}>
-                <HistoryBarChart
+                <HistoryLineChart
+                  heartData={stateHearRateWithTimer}
                   color="info"
-                  title="History of last 10 workouts "
-                  description="Last 10 Performance"
+                  title="Heart Rate Monitoring During Seconds"
+                  // description="Last 10 Performance"
                   date="last update 2 days ago"
                   // chart={reportsBarChartData}
                 />
               </MDBox>
             </Grid>
-
-            <Grid item xs={12} md={6} lg={6}>
+            <Grid item xs={12} md={12} lg={12}>
               <MDBox mb={3}>
-                <HistoryLineChart
+                <HistoryBarChart
+                  missHeartData={numberOfExceedHeartRateData}
                   color="info"
-                  title="Showing fluctuation in heart rate throught the whole workout. "
-                  description="Last 10 Performance"
+                  title="Number of Exceed Heart Rate"
+                  // description="Last 10 Performance"
                   date="last update 2 days ago"
                   // chart={reportsBarChartData}
                 />

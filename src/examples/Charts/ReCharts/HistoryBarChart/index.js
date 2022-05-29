@@ -14,6 +14,7 @@ import MDTypography from "components/MDTypography";
 
 // rechart
 import {
+  Line,
   BarChart,
   Bar,
   Brush,
@@ -32,82 +33,72 @@ import {
 // import numbro from "numbro";
 // import { HuePicker } from "react-color";
 
-// const CustomTooltip = ({ active, payload }) => {
-//   if (active && payload) {
-//     return (
-//       <div style={{ backgroundColor: "black", borderRadius: "5px", padding: "1px 8px" }}>
-//         <p style={{ fontSize: "9pt", color: "white" }}>{`${"Year"} : ${
-//           payload[0].payload.Year
-//         }`}</p>
-//         <p
-//           style={{ fontSize: "9pt", color: "white" }}
-//         >{`${"BoxOfficeProfits"} : ${payload[0].payload.BoxOfficeProfits.toLocaleString()}$`}</p>
-//       </div>
-//     );
-//   }
-//   return null;
-// };
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload) {
+    return (
+      <div style={{ backgroundColor: "black", borderRadius: "5px", padding: "1px 8px" }}>
+        <p style={{ fontSize: "9pt", color: "white" }}>{`${"Lower Bound Exceed Count"} : ${
+          payload[0].payload.exceedLowerCount
+        }`}</p>
+        <p style={{ fontSize: "9pt", color: "white" }}>{`${"Max Bound Exceed Count"} : ${
+          payload[0].payload.exceedMaxCount
+        }`}</p>
+        <p style={{ fontSize: "9pt", color: "white" }}>{`${"Total Exceed Count"} : ${
+          payload[0].payload.totalExceed
+        }`}</p>
+        <p style={{ fontSize: "9pt", color: "white" }}>{`${"Second"} : ${
+          payload[0].payload.second
+        }`}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
-const HistoryBarChart = function HistoryBarChart({ mdBoxColor, title, description, date }) {
-  const data = [
-    {
-      name: "Page A",
-      workout1: 1,
-      workout2: 3,
-      missTime: 30,
-      uv: 4000,
-      pv: 2400,
-    },
-    {
-      name: "Page B",
-      workout1: 2,
-      workout2: 4,
-      missTime: 40,
-      uv: 3000,
-      pv: 1398,
-    },
-    {
-      name: "Page C",
-      workout1: 3,
-      workout2: 5,
-      missTime: 35,
-      uv: 2000,
-      pv: 9800,
-    },
-    {
-      name: "Page D",
-      workout1: 4,
-      workout2: 6,
-      missTime: 36,
-      uv: 2780,
-      pv: 3908,
-    },
-    {
-      name: "Page E",
-      workout1: 5,
-      workout2: 7,
-      missTime: 45,
-      uv: 1890,
-      pv: 4800,
-    },
-    {
-      name: "Page F",
-      workout1: 6,
-      workout2: 8,
-      missTime: 46,
-      uv: 2390,
-      pv: 3800,
-    },
-    {
-      name: "Page G",
-      workout1: 8,
-      workout2: 9,
-      missTime: 58,
-      uv: 3490,
-      pv: 4300,
-    },
-  ];
+const HistoryBarChart = function HistoryBarChart({
+  missHeartData,
+  mdBoxColor,
+  title,
+  description,
+  date,
+}) {
+  // const data = [
+  //   {
+  //     exceedLowerCount: 10,
+  //     exceedMaxCount: 8,
+  //     totalExceed: 18,
+  //     second: 0,
+  //   },
+  //   {
+  //     exceedLowerCount: 6,
+  //     exceedMaxCount: 7,
+  //     totalExceed: 13,
+  //     second: 15,
+  //   },
+  //   {
+  //     exceedLowerCount: 6,
+  //     exceedMaxCount: 5,
+  //     totalExceed: 11,
+  //     second: 30,
+  //   },
+  //   {
+  //     exceedLowerCount: 5,
+  //     exceedMaxCount: 5,
+  //     totalExceed: 10,
+  //     second: 45,
+  //   },
 
+  //   {
+  //     exceedLowerCount: 0,
+  //     exceedMaxCount: 0,
+  //     totalExceed: 0,
+  //     second: 59,
+  //   },
+  // ];
+  const sortedMissHeartData = missHeartData.sort((a, b) => a.second - b.second);
+  const filteredSortedMissHeartData = sortedMissHeartData.filter(
+    (a, i) => sortedMissHeartData.findIndex((s) => a.second === s.second) === i
+  );
   return (
     <Card sx={{ height: "100%", width: "100%" }}>
       <MDBox padding="1rem">
@@ -125,7 +116,7 @@ const HistoryBarChart = function HistoryBarChart({ mdBoxColor, title, descriptio
             <BarChart
               width="100%"
               height="100%"
-              data={data}
+              data={filteredSortedMissHeartData}
               margin={{
                 top: 5,
                 right: 30,
@@ -134,13 +125,17 @@ const HistoryBarChart = function HistoryBarChart({ mdBoxColor, title, descriptio
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="workout1" />
-              <YAxis dataKey="missTime" />
-              {/* <Tooltip content={<CustomTooltip />} /> */}
-              <Tooltip />
+              <XAxis dataKey="second" />
+              <YAxis dataKey="totalExceed" />
+              <Tooltip cursor={{ strokeDasharray: "3 3" }} content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="workout1" fill="#8884d8" />
-              <Bar dataKey="workout2" fill="#82ca9d" />
+              {/* <Bar dataKey="totalExceed" fill="#8884d8" /> */}
+              <Bar dataKey="exceedLowerCount" stackId="a" fill="#8884d8" />
+              <Bar dataKey="exceedMaxCount" stackId="a" fill="#82ca9d" />
+
+              {/* <Bar dataKey="exceedMaxCount" fill="#82ca9d" /> */}
+              <Line type="monotone" dataKey="totalExceed" stroke="white" />
+
               <Brush height={15} />
             </BarChart>
           </ResponsiveContainer>
