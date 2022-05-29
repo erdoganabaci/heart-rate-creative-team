@@ -54,53 +54,65 @@ import team4 from "assets/images/team-4.jpg";
 function Overview() {
   return (
     <DashboardLayout>
-      <DashboardNavbar />
+      {/* <DashboardNavbar /> */}
       <MDBox mb={2} />
       <Header>
         <MDBox mt={5} mb={3}>
           <Grid container spacing={1}>
-            <Grid item xs={12} md={6} xl={4}>
+            <Grid item xs={12} md={4} xl={4}>
               <PlatformSettings />
             </Grid>
-            <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
+            <Grid item xs={12} md={8} xl={8} sx={{ display: "flex" }}>
               <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
               <ProfileInfoCard
-                title="profile information"
-                description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
+                title="Heart Rate Instructions"
+                description="
+                First Select workout type on the dropdown. Then Scan Miband3 and connect it to your phone or website.
+                Be sure you see the device connected label will be green and be sure the battery will be shown. After connection, you are ready to start a heart rate workout.
+                You can click the play button on the top and see the heart rate start green label on the card. Just wait for a little wait you will see your heart rate on the card.
+                Once you saw your heart rate immediately you can start the timer and workout. Every fifteen seconds you will hear a sound notification and if you exceed you will vibrate via miband3.
+                Finally, 1 minute is done you can click the stop heart rate button on top. You analyze easily heart rate and a number of exceed bar charts and line charts will be shown in real-time or at the end of the exercises.
+                "
                 info={{
-                  fullName: "Alec M. Thompson",
-                  mobile: "(44) 123 1234 123",
-                  email: "alecthompson@mail.com",
-                  location: "USA",
+                  selectWorkOut: "Select Workout Type on dropdown",
+                  scan: "Scan miband3 device via bluetooth",
+                  batteryInfo: "Be sure appear battery information",
+                  startHeartrate: "Click play button start heart rate",
+                  startTimer:
+                    "Start Timer and this timer feedback sound will be dynamically change according to exercises type",
+                  stopTimer: "After timer reach 1 minute you can click stop heart rate button",
+                  chart:
+                    "Analyse heart rate and number of exceed bar chart and line chart will be shown real time or at the end of the exercises",
                 }}
-                social={[
-                  {
-                    link: "https://www.facebook.com/CreativeTim/",
-                    icon: <FacebookIcon />,
-                    color: "facebook",
-                  },
-                  {
-                    link: "https://twitter.com/creativetim",
-                    icon: <TwitterIcon />,
-                    color: "twitter",
-                  },
-                  {
-                    link: "https://www.instagram.com/creativetimofficial/",
-                    icon: <InstagramIcon />,
-                    color: "instagram",
-                  },
-                ]}
+                // social={[]}
+                // social={[
+                //   {
+                //     link: "https://www.facebook.com/CreativeTim/",
+                //     icon: <FacebookIcon />,
+                //     color: "facebook",
+                //   },
+                //   {
+                //     link: "https://twitter.com/creativetim",
+                //     icon: <TwitterIcon />,
+                //     color: "twitter",
+                //   },
+                //   {
+                //     link: "https://www.instagram.com/creativetimofficial/",
+                //     icon: <InstagramIcon />,
+                //     color: "instagram",
+                //   },
+                // ]}
                 action={{ route: "", tooltip: "Edit Profile" }}
                 shadow={false}
               />
               <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid>
-            <Grid item xs={12} xl={4}>
+            {/* <Grid item xs={12} xl={4}>
               <ProfilesList title="conversations" profiles={profilesListData} shadow={false} />
-            </Grid>
+            </Grid> */}
           </Grid>
         </MDBox>
-        <MDBox pt={2} px={2} lineHeight={1.25}>
+        {/* <MDBox pt={2} px={2} lineHeight={1.25}>
           <MDTypography variant="h6" fontWeight="medium">
             Projects
           </MDTypography>
@@ -193,9 +205,9 @@ function Overview() {
               />
             </Grid>
           </Grid>
-        </MDBox>
+        </MDBox> */}
       </Header>
-      <Footer />
+      {/* <Footer /> */}
     </DashboardLayout>
   );
 }

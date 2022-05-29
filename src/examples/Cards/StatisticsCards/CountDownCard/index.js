@@ -27,7 +27,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import TextField from "@mui/material/TextField";
 
-function CountDownCard({ color, title, count, percentage, icon }) {
+function CountDownCard({ color, title, count, percentage, icon, setTimer }) {
   const [timeInput, setTimeInput] = useState(59);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(10);
@@ -38,8 +38,6 @@ function CountDownCard({ color, title, count, percentage, icon }) {
   useEffect(() => {
     setSeconds(timeInput);
   }, [timeInput]);
-
-  // console.log("seconds", seconds);
 
   // console.log("timeInput", timeInput);
   const toggle = () => {
@@ -81,6 +79,8 @@ function CountDownCard({ color, title, count, percentage, icon }) {
     if (!isActive) {
       myInterval = setInterval(() => {
         if (seconds > 0) {
+          setTimer(seconds - 1);
+
           setSeconds(seconds - 1);
         }
         if (seconds === 0) {
